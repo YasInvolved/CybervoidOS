@@ -1,5 +1,6 @@
 #include <efi.h>
 #include <efilib.h>
+#include "util.h"
 
 #define newline() Print(L"\n");
 
@@ -168,13 +169,13 @@ EFI_FILE_PROTOCOL* openFile(CHAR16* FileName) {
         SetTextColor(EFI_WHITE, EFI_BACKGROUND_BLACK);
     }
 
-    EFI_FILE_PROTOCOL* FileHandle = NULL;
-    status = RootFS->Open(RootFS, &FileHandle, FileName, 0x0000000000000001, 0);
+    EFI_FILE_PROTOCOL *FileHandle;
+    status = uefi_call_wrapper(RootFS->Open, 5, RootFS, &(FileHandle), FileName, EFI_FILE_MODE_READ, NULL);
     if (EFI_ERROR(status)) {
         CHAR16* fmt;
         SetTextColor(EFI_RED, EFI_BACKGROUND_BLACK);
         StatusToString(fmt, status);
-        Print(L"[ERROR] Failed to open file %s: %s\n", FileName, fmt);
+        Print(L"[ERROR] Failed to open1 file %s: %s\n", FileName, fmt);
         SetTextColor(EFI_WHITE, EFI_BACKGROUND_BLACK);
     }
 
@@ -208,7 +209,17 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     uefi_call_wrapper(ST->BootServices->AllocatePool, 3, EfiLoaderData, fileSize, (void**)&OSBuffer_Handle);
     uefi_call_wrapper(myExampleFile->Read, 3, myExampleFile, &fileSize, OSBuffer_Handle);
     closeFile(myExampleFile);
-
+    UINT8* test = (UINT8*)OSBuffer_Handle;
+    for (int m = 0; m < 20; m++)
+    {
+        UINT8 g = *test;
+        UINT16 s[2];
+        itoa(g, s, HEX);
+        Print(s);
+        Print(L" ");
+        test++;
+    }
+    newline();
     Print(L"Użyj 'S' aby wyłączyć komputer, 'R' aby uruchomić ponownie...\n");
     EFI_INPUT_KEY Key;
     // end of program (temporary)
