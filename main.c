@@ -167,8 +167,11 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
     Print(L"Welcome to CybervoidOS!\n");
     SetTextColor(EFI_WHITE, EFI_BACKGROUND_BLACK);
     Print(L"Initializing fs...\n");
-    if(EFI_ERROR(InitializeFS())) {
-        Print(L"Panic.");
+    EFI_STATUS s = InitializeFS();
+    if(EFI_ERROR(s)) {
+        CHAR16* fmt;
+        StatusToString(fmt, s);
+        Print(L"PANIC: %s\n", fmt);
         ST->BootServices->Stall(10000);
         ST->RuntimeServices->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, 0);
     }
