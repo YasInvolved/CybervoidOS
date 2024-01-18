@@ -1,5 +1,5 @@
 # CybervoidOS
-For everyone, to everything with lightning fast enviroment, enormous power and stunning look.
+For everyone, to everything with lightning fast enviroment and stunning look.
 
 ## Bootloader
 I'm building bootloader with UEFI. I use GNU-EFI to build a bootloader because EDK2 was too complicated and time-consuming to setup for me.
